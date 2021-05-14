@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit-element';
 
 class AppElement extends LitElement {
-  options = ['Albert', 'Lisa', 'Lars', 'Jesper'];
+  options = ['Albert', 'Lisa', 'Lars', 'Jesper', 'Monica'];
 
   static styles = [
     css`

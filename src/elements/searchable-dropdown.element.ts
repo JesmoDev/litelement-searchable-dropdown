@@ -1,14 +1,12 @@
-import { LitElement, html, css, property } from 'lit-element';
+import { LitElement, html, css, property, state } from 'lit-element';
 
 class SearchableDropdownElement extends LitElement {
   @property()
   options: string[];
 
-  @property()
-  private open: boolean = false;
-
-  @property()
-  private selectedOption: string = 'Select Option';
+  @state() open: boolean = false;
+  @state() selectedOption: string = 'Select Option';
+  @state() search: string = '';
 
   static styles = [
     css`
@@ -68,34 +66,48 @@ class SearchableDropdownElement extends LitElement {
     `,
   ];
 
-  toggleDropdown = () => {
+  handleToggleDropdown() {
     this.open = !this.open;
     if (this.open) {
       setTimeout(() => {
         this.shadowRoot.getElementById('input').focus();
       }, 0);
     }
-  };
+  }
 
-  selectOption = (option: string) => {
+  handleSelectOption = (option: string) => {
     this.selectedOption = option;
 
-    this.toggleDropdown();
+    this.handleToggleDropdown();
   };
+
+  handleOnInputChange(e: { target: HTMLInputElement }) {
+    this.search = e.target.value;
+  }
+
+  filterOptions(): string[] {
+    if (this.search) {
+      return this.options.filter((x) => x.includes(this.search));
+    } else {
+      return this.options;
+    }
+  }
 
   render() {
     return html`
       <div>
         <div class="select-input">
           ${this.open
-            ? html`<input id="input" type="text" />`
-            : html`<div class="header" @click=${() => this.toggleDropdown()}>
+            ? html`<input
+                @input=${this.handleOnInputChange}
+                id="input"
+                type="text"
+                value=${this.selectedOption}
+              />`
+            : html`<div class="header" @click=${this.handleToggleDropdown}>
                 ${this.selectedOption}
               </div>`}
-          <div
-            class="select-input--arrow"
-            @click=${() => this.toggleDropdown()}
-          >
+          <div class="select-input--arrow" @click=${this.handleToggleDropdown}>
             <!-- Heroicon: chevron-down -->
             <svg
               class="w-6 h-6"
@@ -117,11 +129,11 @@ class SearchableDropdownElement extends LitElement {
         <div
           class="dropdown ${this.open ? 'dropdown--open' : 'dropdown--closed'}"
         >
-          ${this.options.map(
+          ${this.filterOptions().map(
             (option) =>
               html`
                 <div
-                  @click=${() => this.selectOption(option)}
+                  @click=${() => this.handleSelectOption(option)}
                   value="${option}"
                 >
                   ${option}
