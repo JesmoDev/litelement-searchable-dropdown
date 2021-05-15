@@ -167,14 +167,18 @@ class SearchableDropdownElement extends LitElement {
   }
 
   keyInput(key: any) {
+    var element = this.shadowRoot.getElementById('selected-item');
+
     switch (key.key) {
       case 'ArrowUp':
         key.preventDefault();
+        element.scrollIntoView(false);
         this.index = Math.max(this.index - 1, 0);
         break;
 
       case 'ArrowDown':
         key.preventDefault();
+        element.scrollIntoView(true);
         this.index = Math.min(this.index + 1, this.options.length - 1);
         break;
 
@@ -250,6 +254,7 @@ class SearchableDropdownElement extends LitElement {
               (option, index) =>
                 html`
                   <div
+                    id=${index === this.index ? 'selected-item' : ''}
                     class="${index === this.index
                       ? 'dropdown__item dropdown__item--highlight'
                       : 'dropdown__item'} ${this.options.indexOf(
