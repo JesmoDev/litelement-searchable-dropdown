@@ -44,9 +44,9 @@ class SearchableDropdownElement extends LitElement {
         box-sizing: border-box;
         justify-content: space-between;
         overflow: hidden;
-        box-shadow: 0px 9px 17px -10px rgba(0, 0, 0, 0.08),
-          0px 5px 7px -4px rgba(0, 0, 0, 0.13),
-          0px 1px 3px -1px rgba(0, 0, 0, 0.11);
+        box-shadow: 0px 9px 17px -10px rgba(0, 0, 0, 0.04),
+          0px 5px 7px -4px rgba(0, 0, 0, 0.09),
+          0px 1px 3px -1px rgba(0, 0, 0, 0.07);
       }
 
       .select-input:focus-within {
@@ -57,7 +57,7 @@ class SearchableDropdownElement extends LitElement {
 
       .select-input,
       .dropdown-wrapper {
-        border: 1px solid black;
+        border: 1px solid #c4c7ce;
         border-radius: 8px;
         background: white;
       }
@@ -72,6 +72,7 @@ class SearchableDropdownElement extends LitElement {
 
       .select-input__arrow svg {
         transition: 200ms transform ease-in-out;
+        color: #374151;
       }
 
       .select-input__arrow--open svg {
@@ -88,6 +89,9 @@ class SearchableDropdownElement extends LitElement {
         opacity: 0;
         max-height: 0px;
         transition: 200ms all ease-in-out;
+        box-shadow: 0px 9px 60px -10px rgba(0, 0, 0, 0.05),
+          0px 5px 27px -4px rgba(0, 0, 0, 0.07),
+          0px 1px 10px -1px rgba(0, 0, 0, 0.1);
       }
 
       .dropdown-wrapper--open {
@@ -102,16 +106,16 @@ class SearchableDropdownElement extends LitElement {
       .dropdown {
         overflow-y: auto;
         overflow-x: hidden;
-        box-shadow: 0px 9px 60px -10px rgba(0, 0, 0, 0.1),
-          0px 5px 27px -4px rgba(0, 0, 0, 0.15),
-          0px 1px 10px -1px rgba(0, 0, 0, 0.2);
       }
 
       .dropdown__item {
         padding: 1rem 2rem;
       }
       .dropdown__item--highlight {
-        background: #c7dbff;
+        background: #eef4ff;
+      }
+      .dropdown__item--selected {
+        font-weight: bold;
       }
 
       /* RESET STUFF */
@@ -246,9 +250,13 @@ class SearchableDropdownElement extends LitElement {
               (option, index) =>
                 html`
                   <div
-                    class=${index === this.index
+                    class="${index === this.index
                       ? 'dropdown__item dropdown__item--highlight'
-                      : 'dropdown__item'}
+                      : 'dropdown__item'} ${this.options.indexOf(
+                      this.selectedOption
+                    ) === index
+                      ? 'dropdown__item--selected'
+                      : ''} "
                     @click=${() => this.handleSelectOption(option)}
                     @mouseover=${() => (this.index = index)}
                     value=${option}
@@ -257,6 +265,11 @@ class SearchableDropdownElement extends LitElement {
                   </div>
                 `
             )}
+            ${this.GetFilterOptions().length <= 0
+              ? html`<div class="dropdown__item">
+                  No option match the input
+                </div>`
+              : ''}
           </div>
         </div>
       </div>

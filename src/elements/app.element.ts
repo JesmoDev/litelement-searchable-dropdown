@@ -29,6 +29,7 @@ class AppElement extends LitElement {
         height: 100vh;
         padding-top: 20vh;
         box-sizing: border-box;
+        color: #374151;
       }
     `,
   ];
