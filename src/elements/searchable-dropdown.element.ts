@@ -19,6 +19,12 @@ class SearchableDropdownElement extends LitElement {
         font-size: 1rem;
       }
 
+      .dropdown-wrapper,
+      input,
+      .select-input {
+        box-sizing: border-box;
+      }
+
       .header,
       input {
         padding: 1rem 2rem;
@@ -33,7 +39,6 @@ class SearchableDropdownElement extends LitElement {
       input {
         display: block;
         width: 100%;
-        box-sizing: border-box;
         border: none;
         background: none;
         margin-top: auto;
@@ -42,7 +47,6 @@ class SearchableDropdownElement extends LitElement {
 
       .select-input {
         display: flex;
-        box-sizing: border-box;
         justify-content: space-between;
         overflow: hidden;
         box-shadow: 0px 9px 17px -10px rgba(0, 0, 0, 0.04),
