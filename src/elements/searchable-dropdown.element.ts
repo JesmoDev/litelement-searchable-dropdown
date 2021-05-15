@@ -40,6 +40,12 @@ class SearchableDropdownElement extends LitElement {
         width: 100%;
       }
 
+      .select-input:focus-within {
+        border: 1px solid #007ccf;
+        border-radius: 8px;
+        outline: none;
+      }
+
       .select-input,
       .dropdown {
         border: 1px solid black;
@@ -54,11 +60,14 @@ class SearchableDropdownElement extends LitElement {
 
       .dropdown {
         margin-top: 8px;
-        padding: 8px;
+        overflow: hidden;
       }
 
-      .dropdown--highlight {
-        background: #aaaaaa;
+      .dropdown__item {
+        padding: 1rem 2rem;
+      }
+      .dropdown__item--highlight {
+        background: #aedfff;
       }
 
       .dropdown--open {
@@ -68,11 +77,27 @@ class SearchableDropdownElement extends LitElement {
       .dropdown--closed {
         display: none;
       }
+
+      /* RESET STUFF */
+      input {
+        font-family: 'Roboto', sans-serif !important;
+      }
+
+      input:focus,
+      button {
+        outline: none;
+      }
+
+      button {
+        background: none;
+        border: none;
+      }
     `,
   ];
 
   handleToggleDropdown() {
     this.open = !this.open;
+    this.search = '';
     if (this.open) {
       setTimeout(() => {
         this.shadowRoot.getElementById('input').focus();
@@ -136,14 +161,24 @@ class SearchableDropdownElement extends LitElement {
             ? html`<input
                 @input=${this.handleOnInputChange}
                 @keydown=${this.keyInput}
+                @blur=${this.handleToggleDropdown}
                 id="input"
                 type="text"
                 value=${this.selectedOption}
               />`
-            : html`<div class="header" @click=${this.handleToggleDropdown}>
+            : html`<div
+                class="header"
+                @mousedown=${(e: any) => e.preventDefault()}
+                @click=${this.handleToggleDropdown}
+              >
                 ${this.selectedOption}
               </div>`}
-          <div class="select-input--arrow" @click=${this.handleToggleDropdown}>
+          <button
+            class="select-input--arrow"
+            @mousedown=${(e: any) => e.preventDefault()}
+            @focus=${this.handleToggleDropdown}
+            @click=${this.handleToggleDropdown}
+          >
             <!-- Heroicon: chevron-down -->
             <svg
               class="w-6 h-6"
@@ -159,18 +194,22 @@ class SearchableDropdownElement extends LitElement {
                 d="M19 9l-7 7-7-7"
               ></path>
             </svg>
-          </div>
+          </button>
         </div>
 
         <div
+          @mousedown=${(e: any) => e.preventDefault()}
           class="dropdown ${this.open ? 'dropdown--open' : 'dropdown--closed'}"
         >
           ${this.GetFilterOptions().map(
             (option, index) =>
               html`
                 <div
-                  class=${index === this.index ? 'dropdown--highlight' : ''}
+                  class=${index === this.index
+                    ? 'dropdown__item dropdown__item--highlight'
+                    : 'dropdown__item'}
                   @click=${() => this.handleSelectOption(option)}
+                  @mouseover=${() => (this.index = index)}
                   value=${option}
                 >
                   ${option}

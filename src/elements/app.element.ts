@@ -8,7 +8,6 @@ class AppElement extends LitElement {
       :host {
         display: flex;
         flex-direction: column;
-        color: green;
         margin: auto;
         max-width: 500px;
         align-items: center;
