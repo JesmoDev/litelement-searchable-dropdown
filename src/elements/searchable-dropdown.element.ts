@@ -18,6 +18,17 @@ class SearchableDropdownElement extends LitElement {
         font-size: 1rem;
       }
 
+      .header,
+      input {
+        padding: 1rem 2rem;
+        width: 100%;
+      }
+
+      .header,
+      .select-input__arrow {
+        cursor: pointer;
+      }
+
       input {
         display: block;
         width: 100%;
@@ -32,50 +43,75 @@ class SearchableDropdownElement extends LitElement {
         display: flex;
         box-sizing: border-box;
         justify-content: space-between;
-      }
-
-      .header,
-      input {
-        padding: 1rem 2rem;
-        width: 100%;
+        overflow: hidden;
+        box-shadow: 0px 9px 17px -10px rgba(0, 0, 0, 0.08),
+          0px 5px 7px -4px rgba(0, 0, 0, 0.13),
+          0px 1px 3px -1px rgba(0, 0, 0, 0.11);
       }
 
       .select-input:focus-within {
-        border: 1px solid #007ccf;
+        border: 1px solid #4f46e5;
         border-radius: 8px;
         outline: none;
       }
 
       .select-input,
-      .dropdown {
+      .dropdown-wrapper {
         border: 1px solid black;
         border-radius: 8px;
+        background: white;
       }
 
-      .select-input--arrow {
-        width: 32px;
+      .select-input__arrow {
+        width: 42px;
         display: flex;
         flex-shrink: 0;
+        align-items: center;
+        padding: 8px;
+      }
+
+      .select-input__arrow svg {
+        transition: 200ms transform ease-in-out;
+      }
+
+      .select-input__arrow--open svg {
+        transform: rotate(180deg);
+      }
+
+      .select-input__arrow:hover {
+        background: #f9fafb;
+      }
+
+      .dropdown-wrapper {
+        margin-top: 8px;
+        overflow: hidden;
+        opacity: 0;
+        max-height: 0px;
+        transition: 200ms all ease-in-out;
+      }
+
+      .dropdown-wrapper--open {
+        opacity: 1;
+      }
+
+      .dropdown-wrapper--open,
+      .dropdown {
+        max-height: 200px;
       }
 
       .dropdown {
-        margin-top: 8px;
-        overflow: hidden;
+        overflow-y: auto;
+        overflow-x: hidden;
+        box-shadow: 0px 9px 60px -10px rgba(0, 0, 0, 0.1),
+          0px 5px 27px -4px rgba(0, 0, 0, 0.15),
+          0px 1px 10px -1px rgba(0, 0, 0, 0.2);
       }
 
       .dropdown__item {
         padding: 1rem 2rem;
       }
       .dropdown__item--highlight {
-        background: #aedfff;
-      }
-
-      .dropdown--open {
-        display: block;
-      }
-
-      .dropdown--closed {
-        display: none;
+        background: #c7dbff;
       }
 
       /* RESET STUFF */
@@ -95,20 +131,22 @@ class SearchableDropdownElement extends LitElement {
     `,
   ];
 
-  handleToggleDropdown() {
-    this.open = !this.open;
+  handleOpenDropdown() {
+    this.open = true;
     this.search = '';
-    if (this.open) {
-      setTimeout(() => {
-        this.shadowRoot.getElementById('input').focus();
-      }, 0);
-    }
+    setTimeout(() => {
+      this.shadowRoot.getElementById('input').focus();
+    }, 0);
+  }
+
+  handleCloseDropdown() {
+    this.open = false;
   }
 
   handleSelectOption = (option: string) => {
     this.selectedOption = option;
 
-    this.handleToggleDropdown();
+    this.handleCloseDropdown();
   };
 
   handleOnInputChange(e: { target: HTMLInputElement }) {
@@ -138,14 +176,14 @@ class SearchableDropdownElement extends LitElement {
 
       case 'Enter':
         if (this.search && !this.GetFilterOptions().length) {
-          this.handleToggleDropdown();
+          this.handleCloseDropdown();
         } else {
           this.handleSelectOption(this.options[this.index]);
         }
         break;
 
       case 'Escape':
-        this.handleToggleDropdown();
+        this.handleCloseDropdown();
         break;
 
       default:
@@ -161,23 +199,27 @@ class SearchableDropdownElement extends LitElement {
             ? html`<input
                 @input=${this.handleOnInputChange}
                 @keydown=${this.keyInput}
-                @blur=${this.handleToggleDropdown}
+                @blur=${this.handleCloseDropdown}
                 id="input"
                 type="text"
-                value=${this.selectedOption}
+                placeholder="${this.selectedOption}"
               />`
             : html`<div
                 class="header"
                 @mousedown=${(e: any) => e.preventDefault()}
-                @click=${this.handleToggleDropdown}
+                @click=${this.handleOpenDropdown}
               >
                 ${this.selectedOption}
               </div>`}
           <button
-            class="select-input--arrow"
+            class="select-input__arrow ${this.open
+              ? 'select-input__arrow--open'
+              : ''}"
             @mousedown=${(e: any) => e.preventDefault()}
-            @focus=${this.handleToggleDropdown}
-            @click=${this.handleToggleDropdown}
+            @focus=${this.handleOpenDropdown}
+            @click=${this.open
+              ? this.handleCloseDropdown
+              : this.handleOpenDropdown}
           >
             <!-- Heroicon: chevron-down -->
             <svg
@@ -196,26 +238,26 @@ class SearchableDropdownElement extends LitElement {
             </svg>
           </button>
         </div>
-
         <div
-          @mousedown=${(e: any) => e.preventDefault()}
-          class="dropdown ${this.open ? 'dropdown--open' : 'dropdown--closed'}"
+          class="dropdown-wrapper ${this.open ? 'dropdown-wrapper--open' : ''}"
         >
-          ${this.GetFilterOptions().map(
-            (option, index) =>
-              html`
-                <div
-                  class=${index === this.index
-                    ? 'dropdown__item dropdown__item--highlight'
-                    : 'dropdown__item'}
-                  @click=${() => this.handleSelectOption(option)}
-                  @mouseover=${() => (this.index = index)}
-                  value=${option}
-                >
-                  ${option}
-                </div>
-              `
-          )}
+          <div @mousedown=${(e: any) => e.preventDefault()} class="dropdown">
+            ${this.GetFilterOptions().map(
+              (option, index) =>
+                html`
+                  <div
+                    class=${index === this.index
+                      ? 'dropdown__item dropdown__item--highlight'
+                      : 'dropdown__item'}
+                    @click=${() => this.handleSelectOption(option)}
+                    @mouseover=${() => (this.index = index)}
+                    value=${option}
+                  >
+                    ${option}
+                  </div>
+                `
+            )}
+          </div>
         </div>
       </div>
     `;

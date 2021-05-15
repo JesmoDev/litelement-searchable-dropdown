@@ -1,7 +1,22 @@
 import { LitElement, html, css } from 'lit-element';
 
 class AppElement extends LitElement {
-  options = ['Albert', 'Lisa', 'Lars', 'Jesper', 'Monica'];
+  options = [
+    'Albert',
+    'Lisa',
+    'Lars',
+    'Jesper',
+    'Monica',
+    'Randal',
+    'Lynea',
+    'Elspeth',
+    'Rosalinde',
+    'Marketa',
+    'Jeremie',
+    'Celesta',
+    'Antonietta',
+    'Sebastian',
+  ];
 
   static styles = [
     css`
@@ -11,6 +26,9 @@ class AppElement extends LitElement {
         margin: auto;
         max-width: 500px;
         align-items: center;
+        height: 100vh;
+        padding-top: 20vh;
+        box-sizing: border-box;
       }
     `,
   ];
