@@ -257,7 +257,7 @@ class SearchableDropdownElement extends LitElement {
                     id=${index === this.index ? 'selected-item' : ''}
                     class="${index === this.index
                       ? 'dropdown__item dropdown__item--highlight'
-                      : 'dropdown__item'} ${this.options.indexOf(
+                      : 'dropdown__item'} ${this.GetFilterOptions().indexOf(
                       this.selectedOption
                     ) === index
                       ? 'dropdown__item--selected'
