@@ -6,6 +6,7 @@ class SearchableDropdownElement extends LitElement {
 
   @state() open: boolean = false;
   @state() selectedOption: string = 'Select Option';
+  @state() index: number = 0;
   @state() search: string = '';
 
   static styles = [
@@ -56,6 +57,10 @@ class SearchableDropdownElement extends LitElement {
         padding: 8px;
       }
 
+      .dropdown--highlight {
+        background: #aaaaaa;
+      }
+
       .dropdown--open {
         display: block;
       }
@@ -83,13 +88,43 @@ class SearchableDropdownElement extends LitElement {
 
   handleOnInputChange(e: { target: HTMLInputElement }) {
     this.search = e.target.value;
+    this.index = 0;
   }
 
-  filterOptions(): string[] {
+  GetFilterOptions(): string[] {
     if (this.search) {
       return this.options.filter((x) => x.includes(this.search));
     } else {
       return this.options;
+    }
+  }
+
+  keyInput(key: any) {
+    switch (key.key) {
+      case 'ArrowUp':
+        key.preventDefault();
+        this.index = Math.max(this.index - 1, 0);
+        break;
+
+      case 'ArrowDown':
+        key.preventDefault();
+        this.index = Math.min(this.index + 1, this.options.length - 1);
+        break;
+
+      case 'Enter':
+        if (this.search && !this.GetFilterOptions().length) {
+          this.handleToggleDropdown();
+        } else {
+          this.handleSelectOption(this.options[this.index]);
+        }
+        break;
+
+      case 'Escape':
+        this.handleToggleDropdown();
+        break;
+
+      default:
+        break;
     }
   }
 
@@ -100,6 +135,7 @@ class SearchableDropdownElement extends LitElement {
           ${this.open
             ? html`<input
                 @input=${this.handleOnInputChange}
+                @keydown=${this.keyInput}
                 id="input"
                 type="text"
                 value=${this.selectedOption}
@@ -129,12 +165,13 @@ class SearchableDropdownElement extends LitElement {
         <div
           class="dropdown ${this.open ? 'dropdown--open' : 'dropdown--closed'}"
         >
-          ${this.filterOptions().map(
-            (option) =>
+          ${this.GetFilterOptions().map(
+            (option, index) =>
               html`
                 <div
+                  class=${index === this.index ? 'dropdown--highlight' : ''}
                   @click=${() => this.handleSelectOption(option)}
-                  value="${option}"
+                  value=${option}
                 >
                   ${option}
                 </div>
