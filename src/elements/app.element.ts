@@ -1,4 +1,4 @@
-import { LitElement, html, css, property } from 'lit-element';
+import { LitElement, html, css, state } from 'lit-element';
 
 class AppElement extends LitElement {
   options = [
@@ -34,7 +34,7 @@ class AppElement extends LitElement {
     `,
   ];
 
-  @property()
+  @state()
   name: string;
 
   handleSelectName(event: CustomEvent) {
