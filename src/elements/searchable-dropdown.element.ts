@@ -13,6 +13,7 @@ class SearchableDropdownElement extends LitElement {
     css`
       :host {
         display: flex;
+        position: relative;
         flex-direction: column;
         justify-self: center;
         font-size: 1rem;
@@ -84,6 +85,8 @@ class SearchableDropdownElement extends LitElement {
       }
 
       .dropdown-wrapper {
+        position: absolute;
+        width: 100%;
         margin-top: 8px;
         overflow: hidden;
         opacity: 0;
@@ -149,6 +152,9 @@ class SearchableDropdownElement extends LitElement {
 
   handleSelectOption = (option: string) => {
     this.selectedOption = option;
+
+    const event = new CustomEvent('onSelectOption', { detail: option });
+    this.dispatchEvent(event);
 
     this.handleCloseDropdown();
   };

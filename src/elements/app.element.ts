@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css, property } from 'lit-element';
 
 class AppElement extends LitElement {
   options = [
@@ -33,11 +33,28 @@ class AppElement extends LitElement {
       }
     `,
   ];
+
+  @property()
+  name: string;
+
+  handleSelectName(event: CustomEvent) {
+    this.name = event.detail;
+  }
+
   render() {
     return html`
       <div>
         <h1>Searchable dropdown</h1>
-        <searchable-dropdown .options=${this.options}></searchable-dropdown>
+        <searchable-dropdown
+          .options=${this.options}
+          @onSelectOption=${this.handleSelectName}
+        ></searchable-dropdown>
+        ${this.name
+          ? html`
+              <h3>You have selected the name</h3>
+              <h2>${this.name}</h2>
+            `
+          : html`<h3>You haven't selected a name yet</h3>`}
       </div>
     `;
   }
